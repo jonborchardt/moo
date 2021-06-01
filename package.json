@@ -1,0 +1,31 @@
+{
+  "name": "moo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rm dist/bundle.js",
+    "start": "snowpack dev",
+    "build": "snowpack build",
+    "lint": "prettier --write ./src"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.6.2",
+    "@reduxjs/toolkit": "^1.5.1",
+    "antd": "^4.16.1",
+    "dayjs": "^1.10.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.8",
+    "@types/react-dom": "^17.0.5",
+    "@types/styled-components": "^5.1.9",
+    "prettier": "^2.3.0",
+    "snowpack": "^3.4.0",
+    "styled-components": "^5.3.0"
+  }
+}
