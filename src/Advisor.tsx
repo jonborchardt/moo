@@ -2,33 +2,30 @@ import * as React from "react";
 import styled from "styled-components";
 import { Button } from "antd";
 
-import { Card, SmallCard } from "./Card";
-
-export interface Advisor {
-  label: string;
-  order: number;
-  back: string;
-}
+import { SmallCard } from "./Card";
+import { AdvisorKey, advisors } from "./store/advisors";
 
 interface AdvisorButtonProps {
-  advisor: Advisor;
+  advisorKey: AdvisorKey;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 export const AdvisorButton = (props: AdvisorButtonProps) => {
-  return <Button onClick={props.onClick}>{props.advisor.label}</Button>;
+  const advisor = advisors[props.advisorKey];
+  return <Button onClick={props.onClick}>{advisor.label}</Button>;
 };
 
 interface AdvisorHandProps {
-  advisor: Advisor;
-  deck: Card[];
+  advisorKey: AdvisorKey;
+  deck: string[];
 }
 export const AdvisorHand = (props: AdvisorHandProps) => {
+  const advisor = advisors[props.advisorKey];
   return (
-    <Background src={props.advisor.back}>
-      {props.advisor.label}
+    <Background src={advisor.back}>
+      {advisor.label}
       <Hand>
         {props.deck.map((c, i) => (
-          <TiltCard card={c} key={i} pos={i} />
+          <TiltCard cardKey={c} key={i} pos={i} />
         ))}
       </Hand>
     </Background>

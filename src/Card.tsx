@@ -1,13 +1,18 @@
 import * as React from "react";
-import styled from "styled-components";
 import { Card as AntdCard, Avatar, Popconfirm } from "antd";
 import { PlaySquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
+import { useAppDispatch } from "./store/hooks";
+import { cards, Card as StoreCard } from "./store/cards";
+import { playCard } from "./store/gameSlice";
+
 interface Props {
-  card: Card;
+  cardKey: string;
   className?: string;
 }
-export const SmallCard = ({ card, className }: Props) => {
+export const SmallCard = ({ cardKey, className }: Props) => {
+  const dispatch = useAppDispatch();
+  const card: StoreCard = cards[cardKey];
   return (
     <AntdCard
       className={className}
@@ -16,11 +21,11 @@ export const SmallCard = ({ card, className }: Props) => {
       actions={[
         <Popconfirm
           title={`Play ${card.label}?`}
-          onConfirm={() => card.play()}
+          onConfirm={() => dispatch(playCard(card))}
           okText="Yes"
           cancelText="No"
         >
-          <PlaySquareOutlined key="play" disabled={!card.canPlay()} />{" "}
+          <PlaySquareOutlined key="play" />{" "}
         </Popconfirm>,
         <InfoCircleOutlined key="info" />,
       ]}
@@ -33,20 +38,3 @@ export const SmallCard = ({ card, className }: Props) => {
     </AntdCard>
   );
 };
-
-export interface Card {
-  id: string;
-  label: string;
-  description: string;
-  costDesc: JSX.Element;
-  imageSrc: string;
-  typeSrc: string;
-  canPlay: () => boolean;
-  play: () => void;
-}
-
-export interface LeaderCard extends Card {}
-
-export interface ScienceCard extends Card {}
-
-export interface InteriorCard extends Card {}
