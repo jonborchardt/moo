@@ -1,87 +1,167 @@
 import { createSlice, PayloadAction, Draft } from "@reduxjs/toolkit";
 
-import type { RootState } from "./store";
+import { Indexable } from "./util";
+import { RootState, store } from "./store";
 import { AdvisorKey, AdvisorCards } from "./advisors";
 import { Card } from "./cards";
 
+interface Deck extends Indexable<string[]> {
+  library: string[];
+  hand: string[];
+  play: string[];
+  discard: string[];
+}
 interface GameState {
-  test: string;
   researchPoints: number;
   industryPoints: number;
   researchPointsPerTurn: number;
   industryPointsPerTurn: number;
   advisors: AdvisorKey[];
-  decks: AdvisorCards;
+  decks: { [id: string]: Deck };
 }
 
 export const initialState: GameState = {
-  test: "test",
   researchPoints: 0,
   industryPoints: 0,
   researchPointsPerTurn: 20,
   industryPointsPerTurn: 200,
   advisors: ["leader", "science", "interior"],
   decks: {
-    leader: [
-      "l1_science",
-      "l1_science",
-      "l1_science",
-      "l1_interior",
-      "l1_interior",
-    ],
-    science: [
-      "s1_pureResearch",
-      "s1_pureResearch",
-      "s1_pureResearch",
-      "s1_pureResearch",
-      "s1_marineBarracks",
-    ],
-    interior: [],
+    leader: {
+      library: [
+        "l1_science",
+        "l1_science",
+        "l1_science",
+        "l1_interior",
+        "l1_interior",
+      ],
+      hand: [],
+      play: [],
+      discard: [],
+    },
+    science: {
+      library: [
+        "s1_pureResearch",
+        "s1_pureResearch",
+        "s1_pureResearch",
+        "s1_pureResearch",
+        "s1_marineBarracks",
+      ],
+      hand: [],
+      play: [],
+      discard: [],
+    },
+    interior: {
+      library: [],
+      hand: [],
+      play: [],
+      discard: [],
+    },
   },
+};
+
+const shuffle = (deck: string[]) => {
+  for (let i = deck.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * i);
+    let temp = deck[i];
+    deck[i] = deck[j];
+    deck[j] = temp;
+  }
+  return deck;
+};
+
+const removeCard = (
+  advisor: AdvisorKey,
+  cardId: string,
+  state: Draft<GameState>,
+  count = 1
+) => {
+  const originalDeck = state.decks[advisor];
+  Object.entries(state.decks[advisor]).forEach(([key, val]) => {
+    const deck = val.filter((c: string) => c != cardId);
+    const addBackCount = val.length - deck.length - count;
+    for (let i = 0; i < addBackCount; i++) {
+      deck.push(cardId);
+    }
+    state.decks[advisor][key] = deck;
+  });
+};
+
+const addCard = (
+  advisor: AdvisorKey,
+  cardId: string,
+  state: Draft<GameState>,
+  count = 1
+) => {
+  const deck = state.decks[advisor];
+  for (let i = 0; i < count; i++) {
+    deck.play.push(cardId);
+  }
 };
 
 export const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    setTest: (state, { payload }: PayloadAction<string>) => {
-      state.test = payload;
-    },
-
     setNewTurn: (state, {}: PayloadAction<void>) => {
+      Object.entries(state.decks).map(([id, val]) => {
+        const deck = [...val.hand, ...val.play, ...val.discard];
+        state.decks[id].discard = deck;
+        state.decks[id].hand = [];
+        state.decks[id].play = [];
+      });
+
       state.researchPoints += state.researchPointsPerTurn;
       state.industryPoints + state.industryPointsPerTurn;
     },
 
-    /*addCard: (state, { payload: card }: PayloadAction<Card>) => {
-      state.decks[card.advisor].push(card.id);
+    shuffleLibrary: (state, { payload: deckId }: PayloadAction<string>) => {
+      state.decks[deckId].library = shuffle(state.decks[deckId].library);
     },
 
-    removeCard: (state, { payload: card }: PayloadAction<Card>) => {
-      const idx = state.decks[card.advisor].findIndex(
-        (c: string) => c === card.id
-      );
-      state.decks[card.advisor].splice(idx, 1);
-    },*/
+    drawCard: (state, { payload: deckId }: PayloadAction<string>) => {
+      let card = state.decks[deckId].library.shift();
+      if (!card) {
+        state.decks[deckId].library = shuffle(state.decks[deckId].discard);
+        state.decks[deckId].discard = [];
+        card = state.decks[deckId].library.shift();
+      }
+      if (card) {
+        state.decks[deckId].hand.push(card);
+      }
+    },
 
-    playCard: (state, { payload }: PayloadAction<Card>) => {
+    playCard: (state, { payload: card }: PayloadAction<Card>) => {
+      // move card from hand to to play
+      const index = state.decks[card.advisor].hand.indexOf(card.id);
+      if (index > -1) {
+        let array = state.decks[card.advisor].hand;
+        state.decks[card.advisor].hand = [
+          ...array.slice(0, index),
+          ...array.slice(index + 1),
+        ];
+      } else {
+        throw new Error("Card was not in hand...");
+      }
+      state.decks[card.advisor].play.push(card.id);
+
       // pay requirements //
 
       // update industryPoints
-      if (payload.requirements.industryPoints) {
-        state.industryPoints += payload.requirements.industryPoints;
+      if (card.requirements.industryPoints) {
+        state.industryPoints += card.requirements.industryPoints;
       }
 
       // update researchPoints
-      if (payload.requirements.researchPoints) {
-        state.researchPoints -= payload.requirements.researchPoints;
+      if (card.requirements.researchPoints) {
+        state.researchPoints -= card.requirements.researchPoints;
       }
 
       // do play effects //
 
       // add cards
-      if (payload.play.addCard) {
-        Object.entries(payload.play.addCard).forEach(([advisor, v]) => {
+      if (card.play.addCard) {
+        Object.entries(card.play.addCard).forEach(([advisor, v]) => {
           v?.forEach((cardId: string) => {
             addCard(advisor as AdvisorKey, cardId, state);
           });
@@ -89,8 +169,8 @@ export const gameSlice = createSlice({
       }
 
       // remove cards
-      if (payload.play.removeCard) {
-        Object.entries(payload.play.removeCard).forEach(([advisor, v]) => {
+      if (card.play.removeCard) {
+        Object.entries(card.play.removeCard).forEach(([advisor, v]) => {
           v?.forEach((cardId: string) => {
             removeCard(advisor as AdvisorKey, cardId, state);
           });
@@ -98,8 +178,8 @@ export const gameSlice = createSlice({
       }
 
       // remove all cards
-      if (payload.play.removeCardAll) {
-        Object.entries(payload.play.removeCardAll).forEach(([advisor, v]) => {
+      if (card.play.removeCardAll) {
+        Object.entries(card.play.removeCardAll).forEach(([advisor, v]) => {
           v?.forEach((cardId: string) => {
             removeCard(advisor as AdvisorKey, cardId, state, 9999);
           });
@@ -107,21 +187,21 @@ export const gameSlice = createSlice({
       }
 
       // update researchPointsPerTurn
-      if (payload.play.addResearchPointsPerTurn) {
-        state.researchPointsPerTurn += payload.play.addResearchPointsPerTurn;
+      if (card.play.addResearchPointsPerTurn) {
+        state.researchPointsPerTurn += card.play.addResearchPointsPerTurn;
       }
 
       // update industryPointsPerTurn
-      if (payload.play.addIndustryPointsPerTurn) {
-        state.industryPointsPerTurn += payload.play.addIndustryPointsPerTurn;
+      if (card.play.addIndustryPointsPerTurn) {
+        state.industryPointsPerTurn += card.play.addIndustryPointsPerTurn;
       }
     },
   },
 });
 
-export const { setTest, setNewTurn, playCard } = gameSlice.actions;
+export const { drawCard, setNewTurn, playCard, shuffleLibrary } =
+  gameSlice.actions;
 
-export const selectTest = (state: RootState) => state.game.test;
 export const selectResearchPoints = (state: RootState) =>
   state.game.researchPoints;
 export const selectIndustryPoints = (state: RootState) =>
@@ -134,31 +214,3 @@ export const selectAdvisors = (state: RootState) => state.game.advisors;
 export const selectDecks = (state: RootState) => state.game.decks;
 
 export const gameReducer = gameSlice.reducer;
-
-function removeCard(
-  advisor: AdvisorKey,
-  cardId: string,
-  state: Draft<GameState>,
-  count = 1
-) {
-  const originalDeck = state.decks[advisor];
-  const deck = originalDeck.filter((c: string) => c != cardId);
-  const addBackCount = originalDeck.length - deck.length - count;
-  for (let i = 0; i < addBackCount; i++) {
-    deck.push(cardId);
-  }
-  state.decks[advisor] = deck;
-}
-
-function addCard(
-  advisor: AdvisorKey,
-  cardId: string,
-  state: Draft<GameState>,
-  count = 1
-) {
-  const deck = state.decks[advisor];
-  for (let i = 0; i < count; i++) {
-    deck.push(cardId);
-  }
-  state.decks[advisor] = deck;
-}
