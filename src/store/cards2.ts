@@ -1,14 +1,26 @@
 import { Indexable } from "./util";
 
-// card images
-// type
-// small logo
-// background
-
-// add city x concepts
-// add more food and gold
-// add require tools to tech and buildings per erra?
-// remove population/culture/happiness?
+/** todo
+ * card images:
+ * type
+ * small logo
+ * background
+ *
+ * add tests for network:
+ * 1 root
+ * all leafs give something
+ * no cycles
+ * no mispellings
+ * list all types to see if emums look good
+ * numbers dont jump too high between nodes
+ * numbers always increase in one direction in graph
+ *
+ * card updates:
+ * add city x concepts
+ * add more food and gold
+ * add require tools to tech and buildings per erra?
+ * remove population/culture/happiness?
+ */
 
 export interface SimpleCard {
   researchPoints?: number;
@@ -44,7 +56,6 @@ export interface SimpleCard {
   requiresAluminum?: boolean;
   immediatePlay?: boolean;
   reuse?: boolean;
-
   addCulturePoints?: number;
   addHappinessPoints?: number;
 }
