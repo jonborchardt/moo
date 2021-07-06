@@ -13,7 +13,8 @@ export interface SimpleCard {
   food?: number;
   addResearch?: string[];
   addBuilding?: string[];
-  addUnit?: string[];
+  addMilitary?: string[];
+  removeMilitary?: string[];
   addForeign?: string[];
   addFood?: number;
   addIndustryPoints?: number;
@@ -26,7 +27,7 @@ export interface SimpleCard {
   hasHorses?: boolean;
   hasCoal?: boolean;
   hasAluminum?: boolean;
-  hasMele?: boolean;
+  hasMelee?: boolean;
   hasHandguns?: boolean;
   hasRifles?: boolean;
   hasShotguns?: boolean;
@@ -36,7 +37,7 @@ export interface SimpleCard {
   requiresHorses?: boolean;
   requiresCoal?: boolean;
   requiresAluminum?: boolean;
-  // add units
+  // add units from tech
   // add city x concepts
   // add more food and gold
   // add require tools to tech and buildings per erra?
@@ -48,6 +49,217 @@ export interface SimpleCard {
   addHappinessPoints?: number;
 }
 
+export interface SimpleMilitaryCard extends SimpleCard {
+  industryPoints: number;
+  combatType: string;
+  strength?: number;
+  rangedStrength?: number;
+  range?: number;
+  speed?: number;
+}
+
+export const militaryCards: Indexable<SimpleMilitaryCard> = {
+  archer: {
+    industryPoints: 70,
+    combatType: "archery",
+    strength: 4,
+    rangedStrength: 6,
+    range: 2,
+    speed: 2,
+  },
+
+  chariot_archer: {
+    industryPoints: 20,
+    combatType: "melee",
+    strength: 60,
+    rangedStrength: 3,
+    range: 2,
+    speed: 4,
+    requiresHorses: true,
+  },
+
+  scout: {
+    industryPoints: 25,
+    combatType: "recon",
+    strength: 4,
+    speed: 2,
+  },
+
+  spearman: {
+    industryPoints: 50,
+    combatType: "melee",
+    strength: 7,
+    speed: 2,
+  },
+
+  warrior: {
+    industryPoints: 40,
+    combatType: "melee",
+    strength: 6,
+    speed: 2,
+  },
+
+  catapult: {
+    industryPoints: 100,
+    combatType: "siege",
+    strength: 4,
+    rangedStrength: 14,
+    range: 2,
+    speed: 2,
+    requiresIron: true,
+  },
+
+  horseman: {
+    industryPoints: 80,
+    combatType: "mounted",
+    strength: 12,
+    speed: 4,
+    requiresHorses: true,
+  },
+
+  swordsman: {
+    industryPoints: 80,
+    combatType: "melee",
+    strength: 11,
+    speed: 2,
+    requiresIron: true,
+  },
+
+  crosbowman: {
+    industryPoints: 120,
+    combatType: "archery",
+    strength: 6,
+    rangedStrength: 12,
+    range: 2,
+    speed: 2,
+  },
+
+  knight: {
+    industryPoints: 150,
+    combatType: "mounted",
+    strength: 18,
+    speed: 3,
+    requiresHorses: true,
+  },
+
+  longswordsman: {
+    industryPoints: 150,
+    combatType: "melee",
+    strength: 18,
+    speed: 2,
+    requiresIron: true,
+  },
+
+  pikeman: {
+    industryPoints: 100,
+    combatType: "melee",
+    strength: 10,
+    speed: 2,
+  },
+
+  trebuchet: {
+    industryPoints: 170,
+    combatType: "siege",
+    strength: 10,
+    rangedStrength: 20,
+    range: 2,
+    speed: 2,
+    requiresIron: true,
+  },
+
+  cannon: {
+    industryPoints: 250,
+    combatType: "siege",
+    strength: 10,
+    rangedStrength: 26,
+    range: 2,
+    speed: 2,
+  },
+
+  cavalry: {
+    industryPoints: 260,
+    combatType: "mounted",
+    strength: 25,
+    speed: 3,
+    requiresHorses: true,
+  },
+
+  lancer: {
+    industryPoints: 220,
+    combatType: "mounted",
+    strength: 22,
+    speed: 4,
+    requiresHorses: true,
+  },
+
+  musketman: {
+    industryPoints: 120,
+    combatType: "gunpowder",
+    strength: 16,
+    speed: 2,
+  },
+
+  rifleman: {
+    industryPoints: 200,
+    combatType: "gunpowder",
+    strength: 25,
+    speed: 2,
+  },
+
+  anti_aircraft_gun: {
+    industryPoints: 300,
+    combatType: "gunpowder",
+    strength: 32,
+    rangedStrength: 32,
+    range: 2,
+    speed: 2,
+  },
+
+  artillery: {
+    industryPoints: 420,
+    combatType: "siege",
+    strength: 16,
+    rangedStrength: 32,
+    range: 3,
+    speed: 2,
+  },
+
+  infantry: {
+    industryPoints: 300,
+    combatType: "gunpowder",
+    strength: 36,
+    speed: 2,
+  },
+
+  bomber: {
+    industryPoints: 520,
+    combatType: "air",
+    strength: 21,
+    rangedStrength: 60,
+    range: 10,
+    speed: 10,
+    requiresOil: true,
+  },
+
+  helicopter_gunship: {
+    industryPoints: 450,
+    combatType: "air",
+    strength: 50,
+    speed: 6,
+    requiresAluminum: true,
+  },
+
+  rocket_artillery: {
+    industryPoints: 600,
+    combatType: "siege",
+    strength: 18,
+    rangedStrength: 46,
+    range: 3,
+    speed: 3,
+    requiresAluminum: true,
+  },
+};
+
 export const foreignCards: Indexable<SimpleCard> = {
   found_city_1: {
     immediatePlay: true,
@@ -58,11 +270,15 @@ export const foreignCards: Indexable<SimpleCard> = {
       "found_city_2",
     ],
   },
+
   city_attacks_1: {
     immediatePlay: true,
   },
+
   recon_city_1: {},
+
   build_embasy_city_1: {},
+
   found_city_2: {
     immediatePlay: true,
     addForeign: [
@@ -72,11 +288,15 @@ export const foreignCards: Indexable<SimpleCard> = {
       "found_city_3",
     ],
   },
+
   city_attacks_2: {
     immediatePlay: true,
   },
+
   recon_city_2: {},
+
   build_embasy_city_2: {},
+
   found_city_3: {
     immediatePlay: true,
     addForeign: [
@@ -86,11 +306,15 @@ export const foreignCards: Indexable<SimpleCard> = {
       "found_city_4",
     ],
   },
+
   city_attacks_3: {
     immediatePlay: true,
   },
+
   recon_city_3: {},
+
   build_embasy_city_3: {},
+
   found_city_4: {
     immediatePlay: true,
     addForeign: [
@@ -100,114 +324,143 @@ export const foreignCards: Indexable<SimpleCard> = {
       "found_city_5",
     ],
   },
+
   city_attacks_4: {
     immediatePlay: true,
   },
+
   recon_city_4: {},
+
   build_embasy_city_4: {},
+
   found_city_5: {
     immediatePlay: true,
     addForeign: ["city_attacks_5", "recon_city_5", "build_embasy_city_5"],
   },
+
   city_attacks_5: {
     immediatePlay: true,
   },
+
   recon_city_5: {},
+
   build_embasy_city_5: {},
+
   find_research_tools_1: {
     food: 1,
     addResearchPoints: 10,
     addForeign: ["find_research_tools_2"],
   },
+
   find_research_tools_2: {
     food: 1,
     addResearchPoints: 20,
     addForeign: ["find_research_tools_3"],
   },
+
   find_research_tools_3: {
     food: 2,
     addResearchPoints: 30,
     addForeign: ["find_research_tools_4"],
   },
+
   find_research_tools_4: {
     food: 2,
     addResearchPoints: 40,
     addForeign: ["find_research_tools_5"],
   },
+
   find_research_tools_5: {
     food: 3,
     addResearchPoints: 50,
   },
+
   find_weapons_1: {
     gold: 1,
-    hasMele: true,
+    hasMelee: true,
     addForeign: ["find_weapons_2"],
   },
+
   find_weapons_2: {
     gold: 1,
     hasHandguns: true,
     addForeign: ["find_weapons_3"],
   },
+
   find_weapons_3: {
     gold: 2,
     hasRifles: true,
     addForeign: ["find_weapons_4"],
   },
+
   find_weapons_4: {
     gold: 2,
     hasShotguns: true,
     addForeign: ["find_weapons_5"],
   },
+
   find_weapons_5: {
     gold: 3,
     hasSniperRifels: true,
   },
+
   find_building_tools_1: {
     food: 1,
     addIndustryPoints: 20,
     addForeign: ["find_building_tools_2"],
   },
+
   find_building_tools_2: {
     food: 2,
     addIndustryPoints: 30,
     addForeign: ["find_building_tools_3"],
   },
+
   find_building_tools_3: {
     food: 3,
     addIndustryPoints: 40,
     addForeign: ["find_building_tools_4"],
   },
+
   find_building_tools_4: {
     food: 4,
     addIndustryPoints: 50,
     addForeign: ["find_building_tools_5"],
   },
+
   find_building_tools_5: {
     food: 5,
     addIndustryPoints: 60,
   },
+
   find_food: {
     reuse: true,
     gold: 1,
     addFood: 3,
   },
+
   find_gold: {
     reuse: true,
     food: 1,
     addGold: 3,
   },
+
   find_coal: {
     hasCoal: true,
   },
+
   find_iron: {
     hasIron: true,
   },
+
   find_oil: {
     hasOil: true,
   },
+
   find_horses: {
     hasHorses: true,
   },
+
   find_aluminum: {
     hasAluminum: true,
   },
@@ -490,6 +743,7 @@ export const techCards: Indexable<SimpleCard> = {
       "find_food",
       "find_gold",
     ],
+    addMilitary: ["warrior", "scout", "charriot_archer"],
   },
 
   basic_research: {
@@ -705,6 +959,7 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 35,
     addResearch: ["mathamatics"],
     addBuilding: ["windmill"],
+    addMilitary: ["archer"],
   },
 
   mathamatics: {
@@ -787,6 +1042,7 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 55,
     addResearch: ["iron_working"],
     addBuilding: ["barracks"],
+    addMilitary: ["spearman"],
   },
 
   iron_working: {
