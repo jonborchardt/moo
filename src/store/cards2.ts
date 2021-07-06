@@ -5,6 +5,11 @@ import { Indexable } from "./util";
 // small logo
 // background
 
+// add city x concepts
+// add more food and gold
+// add require tools to tech and buildings per erra?
+// remove population/culture/happiness?
+
 export interface SimpleCard {
   researchPoints?: number;
   industryPoints?: number;
@@ -37,11 +42,6 @@ export interface SimpleCard {
   requiresHorses?: boolean;
   requiresCoal?: boolean;
   requiresAluminum?: boolean;
-  // add units from tech
-  // add city x concepts
-  // add more food and gold
-  // add require tools to tech and buildings per erra?
-  // remove population/culture/happiness?
   immediatePlay?: boolean;
   reuse?: boolean;
 
@@ -871,16 +871,20 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 2200,
     addResearch: ["radar"],
     addBuilding: ["broadcast_tower"],
+    addMilitary: ["anti_aircraft_gun"],
   },
 
   radar: {
     researchPoints: 2600,
     addResearch: ["rocketry", "lasers"],
+    addMilitary: ["bomber"],
   },
 
   rocketry: {
     researchPoints: 3000,
     addResearch: [],
+    addMilitary: ["helicopter_gunship", "rocket_artillery"],
+    removeMilitary: ["lancer", "artillery"],
   },
 
   lasers: {
@@ -897,6 +901,8 @@ export const techCards: Indexable<SimpleCard> = {
   replacable_parts: {
     researchPoints: 1900,
     addResearch: ["flight"],
+    addMilitary: ["infantry"],
+    removeMilitary: ["rifleman"],
   },
 
   flight: {
@@ -937,17 +943,22 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 100,
     addResearch: ["civil_service"],
     addBuilding: ["stable", "circus"],
+    addMilitary: ["horseman"],
   },
 
   civil_service: {
     researchPoints: 400,
-    addResearch: ["chilalry"],
+    addResearch: ["chivalry"],
+    addMilitary: ["pikeman"],
+    removeMilitary: ["spearman"],
   },
 
-  chilalry: {
+  chivalry: {
     researchPoints: 440,
     addResearch: [],
     addBuilding: ["castle"],
+    addMilitary: ["knight"],
+    removeMilitary: ["horseman", "chariot_archer"],
   },
 
   trapping: {
@@ -966,6 +977,7 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 100,
     addResearch: ["currency"],
     addBuilding: ["courthouse"],
+    addMilitary: ["catapult"],
   },
 
   currency: {
@@ -1005,11 +1017,15 @@ export const techCards: Indexable<SimpleCard> = {
   physics: {
     researchPoints: 440,
     addResearch: ["chemistry"],
+    addMilitary: ["trebuchet"],
+    removeMilitary: ["catapult"],
   },
 
   chemistry: {
     researchPoints: 900,
     addResearch: ["fertalizer", "military_science"],
+    addMilitary: ["cannon"],
+    removeMilitary: ["trebuchet"],
   },
 
   fertalizer: {
@@ -1020,6 +1036,8 @@ export const techCards: Indexable<SimpleCard> = {
   dynamite: {
     researchPoints: 1900,
     addResearch: ["combustion"],
+    addMilitary: ["artillery"],
+    removeMilitary: ["cannon"],
   },
 
   combustion: {
@@ -1031,11 +1049,15 @@ export const techCards: Indexable<SimpleCard> = {
     researchPoints: 1300,
     addResearch: [],
     addBuilding: ["militasry_academy"],
+    addMilitary: ["cavalry"],
+    removeMilitary: ["knight"],
   },
 
   machinery: {
     researchPoints: 440,
     addResearch: [],
+    addMilitary: ["crossbowman"],
+    removeMilitary: ["archer"],
   },
 
   bronze_working: {
@@ -1050,6 +1072,8 @@ export const techCards: Indexable<SimpleCard> = {
     addResearch: ["metal_casting"],
     addBuilding: ["armory"],
     addForeign: ["find_iron"],
+    addMilitary: ["swordsman"],
+    removeMilitary: ["warrior"],
   },
 
   metal_casting: {
@@ -1061,20 +1085,26 @@ export const techCards: Indexable<SimpleCard> = {
   steel: {
     researchPoints: 440,
     addResearch: ["gunpowder"],
+    addMilitary: ["longswordsman"],
+    removeMilitary: ["swordsman"],
   },
 
   gunpowder: {
     researchPoints: 680,
     addResearch: ["metallurgy"],
+    addMilitary: ["musketman"],
   },
 
   metallurgy: {
     researchPoints: 900,
     addResearch: ["rifling"],
+    addMilitary: ["lancer"],
   },
 
   rifling: {
     researchPoints: 1425,
     addResearch: [],
+    addMilitary: ["rifleman"],
+    removeMilitary: ["longswordsman", "pikeman", "crossbowman", "musketman"],
   },
 };
