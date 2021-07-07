@@ -76,7 +76,6 @@ const removeCard = (
   state: Draft<GameState>,
   count = 1
 ) => {
-  const originalDeck = state.decks[advisor];
   Object.entries(state.decks[advisor]).forEach(([key, val]) => {
     const deck = val.filter((c: string) => c != cardId);
     const addBackCount = val.length - deck.length - count;

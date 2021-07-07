@@ -10,15 +10,15 @@ import { Indexable } from "./util";
  * 1 root
  * all leafs give something
  * no cycles
- * no mispellings
- * list all types to see if emums look good
- * numbers dont jump too high between nodes
+ * no misspellings
+ * list all types to see if enums look good
+ * numbers don't jump too high between nodes
  * numbers always increase in one direction in graph
  *
  * card updates:
  * add city x concepts
  * add more food and gold
- * add require tools to tech and buildings per erra?
+ * add require tools to tech and buildings per era?
  * remove population/culture/happiness?
  */
 
@@ -58,6 +58,12 @@ export interface SimpleCard {
   reuse?: boolean;
   addCulturePoints?: number;
   addHappinessPoints?: number;
+
+  combatType?: string;
+  strength?: number;
+  rangedStrength?: number;
+  range?: number;
+  speed?: number;
 }
 
 export interface SimpleMilitaryCard extends SimpleCard {
@@ -68,6 +74,158 @@ export interface SimpleMilitaryCard extends SimpleCard {
   range?: number;
   speed?: number;
 }
+
+export type SetType = "alpha";
+export type AdvisorType = "domestic" | "science" | "foreign" | "defense";
+export type ResourceType =
+  | "iron"
+  | "oil"
+  | "horses"
+  | "coal"
+  | "aluminum"
+  | "melee"
+  | "handguns"
+  | "rifles"
+  | "shotguns"
+  | "sniperRifles";
+export type ValuableType =
+  | "research"
+  | "industry"
+  | "gold"
+  | "food"
+  | "population"
+  | "defense"
+  | "culture"
+  | "happiness";
+export type AdvisorCards = { [Property in AdvisorType]: string[] };
+export type Valuables = { [Property in ValuableType]: number | undefined };
+export type Resources = { [Property in ResourceType]: boolean | undefined };
+export interface Card {
+  id: string;
+  advisor: AdvisorType;
+  label: string;
+  description: string;
+  immediatePlay?: boolean;
+  reuse?: boolean;
+  imageSrc: string;
+  requirements: {
+    valuables?: Partial<Valuables>;
+    resources?: Partial<Resources>;
+  };
+  play: {
+    addCard?: Partial<AdvisorCards>;
+    removeCard?: Partial<AdvisorCards>;
+    addValuablesOnce?: Partial<Valuables>;
+    addValuablesPerTurn?: Partial<Valuables>;
+    addResources?: Partial<Resources>;
+  };
+  upkeep?: Partial<Valuables>;
+}
+
+export const makeId = (set: SetType, advisor: AdvisorType, key: string) => {
+  return `${set}__${advisor}__${key}`;
+};
+
+export const hydrate = (
+  set: SetType,
+  advisor: AdvisorType,
+  key: string,
+  value: SimpleCard
+) => {
+  return {
+    id: makeId(set, advisor, key),
+    advisor,
+    label: `${key}__label`,
+    description: `${key}__description`,
+    immediatePlay: value.immediatePlay,
+    reuse: value.reuse,
+    imageSrc: `${key}__imageSrc`,
+    combatType: value.combatType,
+    strength: value.strength,
+    rangedStrength: value.rangedStrength,
+    range: value.range,
+    speed: value.speed,
+    requirements: {
+      valuables: {
+        research: value.researchPoints,
+        industry: value.industryPoints,
+        gold: value.gold,
+        food: value.food,
+      },
+      resources: {
+        iron: value.requiresIron,
+        oil: value.requiresOil,
+        horses: value.requiresHorses,
+        coal: value.requiresCoal,
+        aluminum: value.requiresAluminum,
+      },
+    },
+    play: {
+      addCard: {
+        domestic: value.addBuilding?.map((c) => makeId(set, "domestic", c)),
+        science: value.addResearch?.map((c) => makeId(set, "science", c)),
+        defense: value.addMilitary?.map((c) => makeId(set, "defense", c)),
+        foreign: value.addForeign?.map((c) => makeId(set, "foreign", c)),
+      },
+      removeCard: {
+        defense: value.removeMilitary?.map((c) => makeId(set, "defense", c)),
+      },
+      addValuablesOnce: {},
+      addValuablesPerTurn: {
+        research: value.addResearchPoints,
+        industry: value.addIndustryPoints,
+        gold: value.addGold,
+        food: value.addFood,
+        population: value.addPopulationPoints,
+        defense: value.addDefensePoints,
+        culture: value.addCulturePoints,
+        happiness: value.addHappinessPoints,
+      },
+      addResources: {
+        iron: value.hasIron,
+        oil: value.hasOil,
+        horses: value.hasHorses,
+        coal: value.hasCoal,
+        aluminum: value.hasAluminum,
+        melee: value.hasMelee,
+        handguns: value.hasHandguns,
+        rifles: value.hasRifles,
+        shotguns: value.hasShotguns,
+        sniperRifles: value.hasSniperRifels,
+      },
+    },
+    upkeep: { industry: value.industryUpkeep },
+  };
+};
+
+export const hydrateAll = () => {
+  const ret: Indexable<Card> = {};
+  Object.entries(techCards).forEach(([k, v]) => {
+    ret[makeId("alpha", "science", k)] = hydrate("alpha", "science", k, v);
+  });
+  Object.entries(buildingCards).forEach(([k, v]) => {
+    ret[makeId("alpha", "domestic", k)] = hydrate("alpha", "domestic", k, v);
+  });
+  Object.entries(foreignCards).forEach(([k, v]) => {
+    ret[makeId("alpha", "foreign", k)] = hydrate("alpha", "foreign", k, v);
+  });
+  Object.entries(militaryCards).forEach(([k, v]) => {
+    ret[makeId("alpha", "defense", k)] = hydrate("alpha", "defense", k, v);
+  });
+
+  let newRet = removeEmpty(ret);
+  console.log(newRet);
+  return newRet;
+};
+
+const removeEmpty = (obj: any) => {
+  let newObj: any = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] === Object(obj[key])) newObj[key] = removeEmpty(obj[key]);
+    else if (obj[key] !== undefined) newObj[key] = obj[key];
+  });
+  return newObj;
+};
 
 export const militaryCards: Indexable<SimpleMilitaryCard> = {
   archer: {
