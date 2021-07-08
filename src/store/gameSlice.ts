@@ -1,60 +1,111 @@
 import { createSlice, PayloadAction, Draft } from "@reduxjs/toolkit";
 
 import { Indexable } from "./util";
-import { RootState, store } from "./store";
-//import { AdvisorType, AdvisorCards } from "./advisors";
-//import { Card } from "./cards";
-import { hydrateAll, Card, AdvisorType } from "./cards2";
+import { RootState } from "./store";
+import { AdvisorType } from "./advisors";
+import {
+  hydrateAll,
+  Card,
+  Valuables,
+  Resources,
+  ValuableType,
+  ResourceType,
+  onAllResources,
+  onAllValuables,
+} from "./cards";
 
 interface Deck extends Indexable<string[]> {
   library: string[];
   hand: string[];
   play: string[];
+  new: string[];
   discard: string[];
 }
 interface GameState {
-  researchPoints: number;
-  industryPoints: number;
-  researchPointsPerTurn: number;
-  industryPointsPerTurn: number;
+  valuables: Valuables;
+  valuablesPerTurn: Valuables;
+  upkeep: Valuables;
+  resources: Resources;
   advisors: AdvisorType[];
   decks: { [id: string]: Deck };
-  cards: Indexable<Card>;
+  allCards: Indexable<Card>;
 }
 
 export const initialState: GameState = {
-  researchPoints: 0,
-  industryPoints: 0,
-  researchPointsPerTurn: 20,
-  industryPointsPerTurn: 200,
+  valuables: {
+    science: 20,
+    industry: 200,
+    gold: 1,
+    food: 1,
+    population: 1,
+    defense: 1,
+    culture: 1,
+    happiness: 1,
+  },
+  valuablesPerTurn: {
+    science: 1,
+    industry: 1,
+    gold: 1,
+    food: 1,
+    population: 1,
+    defense: 0,
+    culture: 1,
+    happiness: 0,
+  },
+  upkeep: {
+    science: 0,
+    industry: 0,
+    gold: 0,
+    food: 0,
+    population: 0,
+    defense: 0,
+    culture: 0,
+    happiness: 0,
+  },
+  resources: {
+    iron: false,
+    oil: false,
+    horses: false,
+    coal: false,
+    aluminum: false,
+    melee: false,
+    handguns: false,
+    rifles: false,
+    shotguns: false,
+    sniperRifles: false,
+  },
   advisors: ["domestic", "science", "foreign", "defense"],
   decks: {
     domestic: {
       library: [],
       hand: [],
       play: [],
+      new: [],
       discard: [],
     },
     science: {
       library: ["alpha__science__agriculture"],
       hand: [],
       play: [],
+      new: [],
       discard: [],
     },
     foreign: {
       library: [],
       hand: [],
       play: [],
+      new: [],
       discard: [],
     },
     defense: {
       library: [],
       hand: [],
       play: [],
+      new: [],
       discard: [],
     },
   },
-  cards: hydrateAll(),
+  allCards: hydrateAll(),
 };
 
 const shuffle = (deck: string[]) => {
@@ -91,8 +142,42 @@ const addCard = (
 ) => {
   const deck = state.decks[advisor];
   for (let i = 0; i < count; i++) {
-    deck.play.push(cardId);
+    deck.new.push(cardId);
   }
+};
+
+export const canPlayCard = (
+  card: Card,
+  valuables: Valuables,
+  resources: Resources
+) => {
+  let canPlay = true;
+
+  // has valuables
+  onAllValuables((key: string) => {
+    if (
+      valuables[key as ValuableType] >=
+      (card.requirements.valuables
+        ? card.requirements.valuables[key as ValuableType] || 0
+        : 0)
+    ) {
+      canPlay = false;
+    }
+  });
+
+  // has resources
+  onAllResources((key: string) => {
+    if (
+      (card.requirements.resources
+        ? card.requirements.resources[key as ResourceType] || false
+        : false) &&
+      !resources[key as ResourceType]
+    ) {
+      canPlay = false;
+    }
+  });
+
+  return canPlay;
 };
 
 export const gameSlice = createSlice({
@@ -101,14 +186,30 @@ export const gameSlice = createSlice({
   reducers: {
     setNewTurn: (state, {}: PayloadAction<void>) => {
       Object.entries(state.decks).map(([id, val]) => {
-        const deck = [...val.hand, ...val.play, ...val.discard];
+        // remove any cards that are not reusable
+        val.play.forEach((c) => {
+          const card = state.allCards[c];
+          if (!card.reuse) {
+            removeCard(card.advisor, card.id, state);
+          }
+        });
+        // shuffle all used cards into discard
+        const deck = [...val.hand, ...val.play, ...val.new, ...val.discard];
         state.decks[id].discard = deck;
         state.decks[id].hand = [];
         state.decks[id].play = [];
+        state.decks[id].new = [];
       });
 
-      state.researchPoints += state.researchPointsPerTurn;
-      state.industryPoints += state.industryPointsPerTurn;
+      // update global state of valuables
+      onAllValuables((key: string) => {
+        state.valuables[key as ValuableType] = Math.max(
+          0,
+          state.valuables[key as ValuableType] +
+            state.valuablesPerTurn[key as ValuableType] -
+            state.upkeep[key as ValuableType]
+        );
+      });
     },
 
     shuffleLibrary: (state, { payload: deckId }: PayloadAction<string>) => {
@@ -128,8 +229,6 @@ export const gameSlice = createSlice({
     },
 
     playCard: (state, { payload: card }: PayloadAction<Card>) => {
-      // todo: add additional things on play
-
       // move card from hand to to play
       const index = state.decks[card.advisor].hand.indexOf(card.id);
       if (index > -1) {
@@ -145,15 +244,16 @@ export const gameSlice = createSlice({
 
       // pay requirements //
 
-      // update industryPoints
-      if (card.requirements.valuables?.industry) {
-        state.industryPoints += card.requirements.valuables?.industry;
-      }
-
-      // update researchPoints
-      if (card.requirements.valuables?.research) {
-        state.researchPoints -= card.requirements.valuables?.research;
-      }
+      // update valuables
+      onAllValuables((key: string) => {
+        state.valuables[key as ValuableType] = Math.max(
+          0,
+          state.valuables[key as ValuableType] -
+            (card.requirements.valuables
+              ? card.requirements.valuables[key as ValuableType] || 0
+              : 0)
+        );
+      });
 
       // do play effects //
 
@@ -175,15 +275,24 @@ export const gameSlice = createSlice({
         });
       }
 
-      // update researchPointsPerTurn
-      if (card.play.addValuablesPerTurn?.research) {
-        state.researchPointsPerTurn += card.play.addValuablesPerTurn?.research;
-      }
+      // update valuablesPerTurn and upkeep
+      onAllValuables((key: string) => {
+        state.valuablesPerTurn[key as ValuableType] += card.play
+          .addValuablesPerTurn
+          ? card.play.addValuablesPerTurn[key as ValuableType] || 0
+          : 0;
 
-      // update industryPointsPerTurn
-      if (card.play.addValuablesPerTurn?.industry) {
-        state.industryPointsPerTurn += card.play.addValuablesPerTurn?.industry;
-      }
+        state.upkeep[key as ValuableType] += card.play.upkeep
+          ? card.play.upkeep[key as ValuableType] || 0
+          : 0;
+      });
+
+      // update resources
+      onAllResources((key: string) => {
+        state.resources[key as ResourceType] ||= card.play.addResources
+          ? card.play.addResources[key as ResourceType] || false
+          : false;
+      });
     },
   },
 });
@@ -191,15 +300,12 @@ export const gameSlice = createSlice({
 export const { drawCard, setNewTurn, playCard, shuffleLibrary } =
   gameSlice.actions;
 
-export const selectCards = (state: RootState) => state.game.cards;
-export const selectResearchPoints = (state: RootState) =>
-  state.game.researchPoints;
-export const selectIndustryPoints = (state: RootState) =>
-  state.game.industryPoints;
-export const selectResearchPointsPerTurn = (state: RootState) =>
-  state.game.researchPointsPerTurn;
-export const selectIndustryPointsPerTurn = (state: RootState) =>
-  state.game.industryPointsPerTurn;
+export const selectAllCards = (state: RootState) => state.game.allCards;
+export const selectValuables = (state: RootState) => state.game.valuables;
+export const selectValuablesPerTurn = (state: RootState) =>
+  state.game.valuablesPerTurn;
+export const selectUpkeep = (state: RootState) => state.game.upkeep;
+export const selectResources = (state: RootState) => state.game.resources;
 export const selectAdvisors = (state: RootState) => state.game.advisors;
 export const selectDecks = (state: RootState) => state.game.decks;
 

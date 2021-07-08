@@ -9,6 +9,10 @@ import ScienceTypeSrc from "../icons/GameToken_34_1.png";
 import DomesticTypeSrc from "../icons/GameToken_31_1.png";
 import DefenseTypeSrc from "../icons/GameToken_31_1.png"; // todo
 
+export type AdvisorType = "domestic" | "science" | "foreign" | "defense";
+
+export type AdvisorCards = { [Property in AdvisorType]: string[] };
+
 export interface Advisor {
   label: string;
   order: number;
@@ -42,7 +46,3 @@ export const advisors: Indexable<Advisor> = {
     icon: DefenseTypeSrc,
   },
 };
-
-export type AdvisorType = "domestic" | "science" | "foreign" | "defense";
-
-export type AdvisorCards = { [Property in AdvisorType]: string[] };

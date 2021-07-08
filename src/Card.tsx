@@ -3,8 +3,8 @@ import { Card as AntdCard, Avatar, Popconfirm } from "antd";
 import { PlaySquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { Card as StoreCard } from "./store/cards2";
-import { playCard, selectCards } from "./store/gameSlice";
+import { Card as StoreCard } from "./store/cards";
+import { playCard, selectAllCards } from "./store/gameSlice";
 import { advisors } from "./store/advisors";
 
 interface Props {
@@ -12,9 +12,9 @@ interface Props {
   className?: string;
 }
 export const SmallCard = ({ cardKey, className }: Props) => {
-  console.log(cardKey);
+  console.log(cardKey); // todo: remove
   const dispatch = useAppDispatch();
-  const cards = useAppSelector(selectCards);
+  const cards = useAppSelector(selectAllCards);
   const card: StoreCard = cards[cardKey];
   return (
     <AntdCard
