@@ -32,7 +32,18 @@ export const Board = () => {
           <Button onClick={() => dispatch(drawCard(a))}>Draw Card</Button>
         </React.Fragment>
       ))}
-      <Button onClick={() => dispatch(setNewTurn())}>Next Turn</Button>
+      <Button
+        onClick={() => {
+          dispatch(setNewTurn());
+          // todo: more thought about number of draws
+          advisors.map((a) => {
+            dispatch(drawCard(a));
+            dispatch(drawCard(a));
+          });
+        }}
+      >
+        Next Turn
+      </Button>
     </>
   );
 };

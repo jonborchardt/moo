@@ -1,31 +1,48 @@
-import LeaderBack from "../icons/alienship2.png";
+import { Indexable } from "./util";
+
+import ForeignBack from "../icons/alienship2.png";
 import ScienceBack from "../icons/tek-floor-blue.png";
-import InteriorBack from "../icons/engineering.png";
+import DomesticBack from "../icons/engineering.png";
+import DefenseBack from "../icons/engineering.png"; // todo
+import ForeignTypeSrc from "../icons/GameToken_27_1.png";
+import ScienceTypeSrc from "../icons/GameToken_34_1.png";
+import DomesticTypeSrc from "../icons/GameToken_31_1.png";
+import DefenseTypeSrc from "../icons/GameToken_31_1.png"; // todo
 
 export interface Advisor {
   label: string;
   order: number;
   back: string;
+  icon: string;
 }
 
-export const advisors = {
-  leader: {
-    label: "Leader",
+export const advisors: Indexable<Advisor> = {
+  domestic: {
+    label: "Domestic Advisor",
     order: 0,
-    back: LeaderBack,
+    back: DomesticBack,
+    icon: DomesticTypeSrc,
   },
   science: {
-    label: "Secretary of Science",
+    label: "Science Advisor",
     order: 1,
     back: ScienceBack,
+    icon: ScienceTypeSrc,
   },
-  interior: {
-    label: "Secretary of the Interior",
+  foreign: {
+    label: "Foreign Advisor",
     order: 2,
-    back: InteriorBack,
+    back: ForeignBack,
+    icon: ForeignTypeSrc,
+  },
+  defense: {
+    label: "Defense Advisor",
+    order: 3,
+    back: DefenseBack,
+    icon: DefenseTypeSrc,
   },
 };
 
-export type AdvisorKey = "leader" | "science" | "interior";
+export type AdvisorType = "domestic" | "science" | "foreign" | "defense";
 
-export type AdvisorCards = { [Property in AdvisorKey]: string[] };
+export type AdvisorCards = { [Property in AdvisorType]: string[] };

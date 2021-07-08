@@ -5,12 +5,12 @@ import ScienceSrc from "../icons/g_02.png";
 import InteriorSrc from "../icons/gr_05.png";
 import MarineBarracksSrc from "../icons/SGI_76.png";
 
-import { AdvisorKey, AdvisorCards } from "./advisors";
+import { AdvisorType, AdvisorCards } from "./advisors";
 import { Indexable } from "./util";
-
+/*
 export interface Card {
   id: string;
-  advisor: AdvisorKey;
+  advisor: AdvisorType;
   label: string;
   description: string;
   imageSrc: string;
@@ -93,3 +93,4 @@ export const cards: Indexable<Card> = {
     play: {},
   },
 };
+*/

@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 
 import { store } from "./store/store";
 import { Board } from "./Board";
-import { hydrateAll } from "./store/cards2";
 
 import "antd/dist/antd.css";
 
@@ -15,9 +14,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 export const App = () => {
-  // todo: remove
-  hydrateAll();
-
   return (
     <Provider store={store}>
       <GlobalStyle />

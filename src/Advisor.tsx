@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { Button } from "antd";
 
 import { SmallCard } from "./Card";
-import { AdvisorKey, advisors } from "./store/advisors";
+import { AdvisorType, advisors } from "./store/advisors";
 
 interface AdvisorButtonProps {
-  advisorKey: AdvisorKey;
+  advisorKey: AdvisorType;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 export const AdvisorButton = (props: AdvisorButtonProps) => {
@@ -15,7 +15,7 @@ export const AdvisorButton = (props: AdvisorButtonProps) => {
 };
 
 interface AdvisorHandProps {
-  advisorKey: AdvisorKey;
+  advisorKey: AdvisorType;
   deck: string[];
 }
 export const AdvisorHand = (props: AdvisorHandProps) => {

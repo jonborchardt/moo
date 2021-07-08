@@ -191,9 +191,11 @@ export const hydrateAll = () => {
     ret[makeId("alpha", "defense", k)] = hydrate("alpha", "defense", k, v);
   });
 
-  let newRet = removeEmpty(ret);
-  console.log(newRet);
-  return newRet;
+  return ret;
+  console.log(ret);
+  //let newRet = removeEmpty(ret);
+  //console.log(newRet);
+  //return newRet;
 };
 
 const removeEmpty = (obj: any) => {
@@ -854,7 +856,7 @@ export const buildingCards: Indexable<SimpleCard> = {
     addDefensePoints: 2,
   },
 
-  monumnet: {
+  monument: {
     industryPoints: 60,
     industryUpkeep: 1,
     addCulturePoints: 2,
@@ -882,7 +884,7 @@ export const buildingCards: Indexable<SimpleCard> = {
 export const techCards: Indexable<SimpleCard> = {
   agriculture: {
     addResearch: ["pottery", "animal_husbandry", "mining", "basic_research"],
-    addBuilding: ["monument", "water_wheel", "basic_planning"],
+    addBuilding: ["monument", "water_mill", "basic_planning"],
     addForeign: [
       "find_research_tools_1",
       "find_weapons_1",
@@ -890,7 +892,7 @@ export const techCards: Indexable<SimpleCard> = {
       "find_food",
       "find_gold",
     ],
-    addMilitary: ["warrior", "scout", "charriot_archer"],
+    addMilitary: ["warrior", "scout", "chariot_archer"],
   },
 
   basic_research: {

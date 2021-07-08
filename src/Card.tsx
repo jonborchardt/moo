@@ -2,16 +2,19 @@ import * as React from "react";
 import { Card as AntdCard, Avatar, Popconfirm } from "antd";
 import { PlaySquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
-import { useAppDispatch } from "./store/hooks";
-import { cards, Card as StoreCard } from "./store/cards";
-import { playCard } from "./store/gameSlice";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { Card as StoreCard } from "./store/cards2";
+import { playCard, selectCards } from "./store/gameSlice";
+import { advisors } from "./store/advisors";
 
 interface Props {
   cardKey: string;
   className?: string;
 }
 export const SmallCard = ({ cardKey, className }: Props) => {
+  console.log(cardKey);
   const dispatch = useAppDispatch();
+  const cards = useAppSelector(selectCards);
   const card: StoreCard = cards[cardKey];
   return (
     <AntdCard
@@ -31,7 +34,7 @@ export const SmallCard = ({ cardKey, className }: Props) => {
       ]}
     >
       <AntdCard.Meta
-        avatar={<Avatar src={card.typeSrc} />}
+        avatar={<Avatar src={advisors[card.advisor].icon} />}
         title={card.label}
         description={card.description}
       />
