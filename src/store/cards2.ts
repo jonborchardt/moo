@@ -1,27 +1,5 @@
 import { Indexable } from "./util";
 
-/** todo
- * card images:
- * type
- * small logo
- * background
- *
- * add tests for network:
- * 1 root
- * all leafs give something
- * no cycles
- * no misspellings
- * list all types to see if enums look good
- * numbers don't jump too high between nodes
- * numbers always increase in one direction in graph
- *
- * card updates:
- * add city x concepts
- * add more food and gold
- * add require tools to tech and buildings per era?
- * remove population/culture/happiness?
- */
-
 export interface SimpleCard {
   researchPoints?: number;
   industryPoints?: number;
