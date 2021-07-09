@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 export const SmallCard = ({ cardKey, className }: Props) => {
-  console.log(cardKey); // todo: remove
+  console.log(`Rendering: ${cardKey}`); // todo: remove
   const dispatch = useAppDispatch();
   const cards = useAppSelector(selectAllCards);
   const card: StoreCard = cards[cardKey];

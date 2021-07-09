@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, Draft } from "@reduxjs/toolkit";
 
 import { Indexable } from "./util";
 import { RootState } from "./store";
-import { AdvisorType, onAllAdvisors } from "./advisors";
+import { AdvisorType } from "./advisors";
 import {
   hydrateAll,
   Card,
@@ -184,43 +184,6 @@ export const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    test: (state, {}: PayloadAction<void>) => {
-      Object.values(state.allCards).forEach((c) => {
-        onAllAdvisors((g) => {
-          if (c.play.addCard) {
-            c.play.addCard[g as AdvisorType]?.forEach((a) => {
-              if (!state.allCards[a]) {
-                console.log(`addCard for ${a} failed`);
-              }
-            });
-          }
-          if (c.play.removeCard) {
-            c.play.removeCard[g as AdvisorType]?.forEach((a) => {
-              if (!state.allCards[a]) {
-                console.log(`removeCard for ${a} failed`);
-              }
-            });
-          }
-        });
-
-        //TODO: this is not working yet
-        if (c.id.endsWith("weapons_4")) {
-          console.log(c.play.addCard);
-        }
-        if (
-          (!c.play.addCard || Object.keys(c.play.addCard).length === 0) &&
-          (!c.play.removeCard || Object.keys(c.play.removeCard).length === 0) &&
-          (!c.play.addValuablesOnce ||
-            Object.keys(c.play.addValuablesOnce).length === 0) &&
-          (!c.play.addValuablesPerTurn ||
-            Object.keys(c.play.addValuablesPerTurn).length === 0) &&
-          (!c.play.addResources ||
-            Object.keys(c.play.addResources).length === 0)
-        ) {
-          console.log(`Useless Leaf: ${JSON.stringify(c)}`);
-        }
-      });
-    },
     setNewTurn: (state, {}: PayloadAction<void>) => {
       Object.entries(state.decks).map(([id, val]) => {
         // remove any cards that are not reusable
@@ -334,7 +297,7 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { test, drawCard, setNewTurn, playCard, shuffleLibrary } =
+export const { drawCard, setNewTurn, playCard, shuffleLibrary } =
   gameSlice.actions;
 
 export const selectAllCards = (state: RootState) => state.game.allCards;

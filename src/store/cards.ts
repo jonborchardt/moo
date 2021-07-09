@@ -1,5 +1,5 @@
 import { Indexable } from "./util";
-import { AdvisorType } from "./advisors";
+import { AdvisorType, onAllAdvisors } from "./advisors";
 
 export interface SimpleCard {
   // play valuables
@@ -149,6 +149,11 @@ export interface Card {
   immediatePlay?: boolean;
   reuse?: boolean;
   imageSrc: string;
+  combatType?: string;
+  strength?: number;
+  rangedStrength?: number;
+  range?: number;
+  speed?: number;
   requirements: {
     valuables?: Partial<ValuablesNullable>;
     resources?: Partial<ResourcesNullable>;
@@ -172,7 +177,7 @@ export const hydrate = (
   advisor: AdvisorType,
   key: string,
   value: SimpleCard
-) => {
+): Card => {
   return {
     id: makeId(set, advisor, key),
     advisor,
@@ -286,20 +291,84 @@ export const hydrateAll = () => {
     ret[makeId("alpha", "defense", k)] = hydrate("alpha", "defense", k, v);
   });
 
-  // console.log(ret); // todo: remove
-  return ret;
+  // test
+  Object.values(ret).forEach((c) => {
+    let useless = true;
+    onAllAdvisors((g) => {
+      if (c.play.addCard) {
+        c.play.addCard[g as AdvisorType]?.forEach((a) => {
+          useless = false;
+          if (!ret[a]) {
+            console.log(`addCard for ${a} failed`);
+          }
+        });
+      }
+      if (c.play.removeCard) {
+        c.play.removeCard[g as AdvisorType]?.forEach((a) => {
+          useless = false;
+          if (!ret[a]) {
+            console.log(`removeCard for ${a} failed`);
+          }
+        });
+      }
+    });
 
-  //let newRet = removeEmpty(ret);
-  //return newRet;
-};
+    onAllValuables((v) => {
+      if (
+        c.play.addValuablesOnce &&
+        c.play.addValuablesOnce[v as ValuableType]
+      ) {
+        useless = false;
+      }
+      if (
+        c.play.addValuablesPerTurn &&
+        c.play.addValuablesPerTurn[v as ValuableType]
+      ) {
+        useless = false;
+      }
+    });
 
-const removeEmpty = (obj: any) => {
-  let newObj: any = {};
-  Object.keys(obj).forEach((key) => {
-    if (obj[key] === Object(obj[key])) newObj[key] = removeEmpty(obj[key]);
-    else if (obj[key] !== undefined) newObj[key] = obj[key];
+    onAllResources((v) => {
+      if (c.play.addResources && c.play.addResources[v as ResourceType]) {
+        useless = false;
+      }
+    });
+
+    if (useless && c.combatType === undefined) {
+      console.log(`Useless Leaf: ${c.id}`);
+    }
   });
-  return newObj;
+
+  // dfs
+  const visited: Indexable<boolean> = {};
+  const stack: Card[] = [ret["alpha__science__agriculture"]];
+  while (stack.length) {
+    const node = stack.pop();
+    if (node && !visited[node.id]) {
+      visited[node.id] = true;
+      // console.log(`we visited ${node.id}`);
+      onAllAdvisors((g) => {
+        if (node.play.addCard) {
+          node.play.addCard[g as AdvisorType]?.forEach((a) => {
+            if (stack.includes(ret[a])) {
+              console.log("Error: cycle in graph");
+            }
+            stack.push(ret[a]);
+          });
+        }
+      });
+    }
+  }
+  const found = new Set(Object.keys(visited));
+  const all = new Set(Object.keys(ret));
+  let difference = new Set([...all].filter((x) => !found.has(x)));
+  if (difference.size) {
+    console.log("These cards are not yet part of the graph:");
+    console.log(`Found ${found.size} of ${all.size}}`, difference);
+  }
+
+  console.log(ret);
+  return ret;
 };
 
 export const defenseCards: Indexable<SimpleCard> = {
@@ -515,12 +584,15 @@ export const foreignCards: Indexable<SimpleCard> = {
     ],
   },
 
+  // todo: useless
   city_attacks_1: {
     immediatePlay: true,
   },
 
+  // todo: useless
   recon_city_1: {},
 
+  // todo: useless
   build_embasy_city_1: {},
 
   found_city_2: {
@@ -533,12 +605,15 @@ export const foreignCards: Indexable<SimpleCard> = {
     ],
   },
 
+  // todo: useless
   city_attacks_2: {
     immediatePlay: true,
   },
 
+  // todo: useless
   recon_city_2: {},
 
+  // todo: useless
   build_embasy_city_2: {},
 
   found_city_3: {
@@ -551,12 +626,15 @@ export const foreignCards: Indexable<SimpleCard> = {
     ],
   },
 
+  // todo: useless
   city_attacks_3: {
     immediatePlay: true,
   },
 
+  // todo: useless
   recon_city_3: {},
 
+  // todo: useless
   build_embasy_city_3: {},
 
   found_city_4: {
@@ -569,12 +647,15 @@ export const foreignCards: Indexable<SimpleCard> = {
     ],
   },
 
+  // todo: useless
   city_attacks_4: {
     immediatePlay: true,
   },
 
+  // todo: useless
   recon_city_4: {},
 
+  // todo: useless
   build_embasy_city_4: {},
 
   found_city_5: {
@@ -582,12 +663,15 @@ export const foreignCards: Indexable<SimpleCard> = {
     addForeignCard: ["city_attacks_5", "recon_city_5", "build_embasy_city_5"],
   },
 
+  // todo: useless
   city_attacks_5: {
     immediatePlay: true,
   },
 
+  // todo: useless
   recon_city_5: {},
 
+  // todo: useless
   build_embasy_city_5: {},
 
   find_research_tools_1: {
@@ -1030,6 +1114,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     addDomesticCard: ["seaport"],
   },
 
+  // todo: useless
   archaeology: {
     scienceCost: 1300,
     addScienceCard: [],
@@ -1039,6 +1124,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     scienceCost: 55,
     addScienceCard: ["education"],
     addDomesticCard: ["library"],
+    addForeignCard: ["found_city_1"],
   },
 
   education: {
@@ -1106,6 +1192,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     addScienceCard: ["robotics"],
   },
 
+  // todo: useless
   robotics: {
     scienceCost: 3350,
     addScienceCard: [],
@@ -1131,6 +1218,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     removeDefenseCard: ["lancer", "artillery"],
   },
 
+  // todo: useless
   lasers: {
     scienceCost: 3000,
     addScienceCard: [],
@@ -1149,6 +1237,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     removeDefenseCard: ["rifleman"],
   },
 
+  // todo: useless
   flight: {
     scienceCost: 2200,
     addScienceCard: [],
@@ -1267,12 +1356,12 @@ export const scienceCards: Indexable<SimpleCard> = {
 
   chemistry: {
     scienceCost: 900,
-    addScienceCard: ["fertalizer", "military_science"],
+    addScienceCard: ["fertilizer", "military_science"],
     addDefenseCard: ["cannon"],
     removeDefenseCard: ["trebuchet"],
   },
 
-  fertalizer: {
+  fertilizer: {
     scienceCost: 1300,
     addScienceCard: ["dynamite"],
   },
@@ -1284,6 +1373,7 @@ export const scienceCards: Indexable<SimpleCard> = {
     removeDefenseCard: ["cannon"],
   },
 
+  // todo: useless
   combustion: {
     scienceCost: 2200,
     addScienceCard: [],
