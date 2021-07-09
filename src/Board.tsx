@@ -9,6 +9,7 @@ import {
   setNewTurn,
   drawCard,
   shuffleLibrary,
+  test,
 } from "./store/gameSlice";
 
 export const Board = () => {
@@ -17,6 +18,8 @@ export const Board = () => {
   const decks = useAppSelector(selectDecks) ?? {};
 
   useEffect(() => {
+    // initial tests
+    dispatch(test());
     // on intial load draw 1 card from each deck
     advisors.forEach((a) => {
       dispatch(shuffleLibrary(a));

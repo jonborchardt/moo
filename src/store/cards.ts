@@ -286,7 +286,7 @@ export const hydrateAll = () => {
     ret[makeId("alpha", "defense", k)] = hydrate("alpha", "defense", k, v);
   });
 
-  console.log(ret); // todo: remove
+  // console.log(ret); // todo: remove
   return ret;
 
   //let newRet = removeEmpty(ret);
@@ -369,7 +369,7 @@ export const defenseCards: Indexable<SimpleCard> = {
     requiresIron: true,
   },
 
-  crosbowman: {
+  crossbowman: {
     industryCost: 120,
     combatType: "archery",
     strength: 6,
@@ -1292,7 +1292,7 @@ export const scienceCards: Indexable<SimpleCard> = {
   military_science: {
     scienceCost: 1300,
     addScienceCard: [],
-    addDomesticCard: ["militasry_academy"],
+    addDomesticCard: ["military_academy"],
     addDefenseCard: ["cavalry"],
     removeDefenseCard: ["knight"],
   },

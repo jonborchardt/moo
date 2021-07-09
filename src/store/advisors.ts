@@ -11,6 +11,12 @@ import DefenseTypeSrc from "../icons/GameToken_31_1.png"; // todo
 
 export type AdvisorType = "domestic" | "science" | "foreign" | "defense";
 
+export const onAllAdvisors = (func: (key: string) => void) => {
+  ["domestic", "science", "interior", "defense"].forEach((key: string) =>
+    func(key)
+  );
+};
+
 export type AdvisorCards = { [Property in AdvisorType]: string[] };
 
 export interface Advisor {
