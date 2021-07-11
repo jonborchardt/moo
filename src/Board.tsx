@@ -10,6 +10,7 @@ import {
   drawCard,
   shuffleLibrary,
 } from "./store/gameSlice";
+import { PlaySpace } from "./PlaySpace";
 
 export const Board = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ export const Board = () => {
 
   return (
     <>
+      <PlaySpace />
       {advisors.map((a) => (
         <React.Fragment key={a}>
           <AdvisorHand advisorKey={a} deck={decks[a].hand} />

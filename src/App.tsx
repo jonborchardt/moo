@@ -9,7 +9,10 @@ import "antd/dist/antd.css";
 
 const GlobalStyle = createGlobalStyle`
   body {
-   background: rgb(1, 38, 52);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(1, 38, 52);
   }
 `;
 
