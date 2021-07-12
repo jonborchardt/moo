@@ -13,25 +13,7 @@ export const percentToPx = ({ x, y }: { x: number; y: number }) => {
     y: Math.max(0, Math.min(1, y)) * sceneHeight,
   };
 };
-/*
-const ColoredRect = () => {
-  const [color, setColor] = useState("green");
-  const handleClick = () => {
-    setColor(Konva.Util.getRandomColor());
-  };
-  return (
-    <Rect
-      x={60}
-      y={60}
-      width={150}
-      height={150}
-      fill={color}
-      shadowBlur={15}
-      onClick={handleClick}
-    />
-  );
-};
-*/
+
 export const PlaySpace = () => {
   const [width, height] = useWindowSize();
   const scale = Math.min(width / sceneWidth, height / sceneHeight);
@@ -46,8 +28,7 @@ export const PlaySpace = () => {
       </Layer>
       <Layer>
         <Text text="Click" fontSize={60} />
-        <Hand x={300} y={50} width={200} height={300} />
-        <Hand x={600} y={150} width={200} height={300} rotationDeg={20} />
+        <Hand x={600} y={150} width={1500/2} height={2100/2} rotationDeg={20} />
       </Layer>
     </Stage>
   );
