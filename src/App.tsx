@@ -5,8 +5,6 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Board } from "./Board";
 
-import "antd/dist/antd.css";
-
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
