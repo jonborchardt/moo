@@ -2,10 +2,9 @@ import React, { useRef } from "react";
 import Konva from "konva";
 import { Label, Tag, Text } from "react-konva";
 
-interface Props extends Konva.NodeConfig {
-  width: number;
-  height: number;
-}
+import { Theme } from "./theme";
+
+interface Props extends Konva.NodeConfig {}
 
 export const Button = (props: Props) => {
   const r = useRef<Konva.Node>();
@@ -35,19 +34,19 @@ export const Button = (props: Props) => {
       }}
     >
       <Tag
-        fill="black"
+        fill={Theme.palette.background.dark}
         lineJoin="round"
-        shadowColor="black"
-        shadowBlur={10}
-        shadowOffset={{ x: 10, y: 10 }}
+        shadowColor={Theme.palette.common.black}
+        shadowBlur={Theme.spacing.xxs}
+        shadowOffset={{ x: Theme.spacing.xxs, y: Theme.spacing.xxs }}
         shadowOpacity={0.5}
       />
       <Text
         text={props.text}
-        fontFamily="Calibri"
-        fontSize={props.height}
-        padding={5}
-        fill="white"
+        fontFamily={Theme.font.family}
+        fontSize={Theme.textStyles.normal}
+        padding={Theme.spacing.xxs}
+        fill={Theme.palette.text.contrast}
       />
     </Label>
   );

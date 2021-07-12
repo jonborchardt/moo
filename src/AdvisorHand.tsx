@@ -2,6 +2,7 @@ import * as React from "react";
 import { Group, Text } from "react-konva";
 import Konva from "konva";
 
+import { Theme } from "./theme";
 import { useAppDispatch } from "./store/hooks";
 import { drawCard } from "./store/gameSlice";
 import { AdvisorType, advisors } from "./store/advisors";
@@ -15,19 +16,19 @@ interface Props extends Konva.NodeConfig {
 export const AdvisorHand = (props: Props) => {
   const dispatch = useAppDispatch();
   const advisor = advisors[props.advisorKey];
-  const cardWidth = 450;
-  const cardHeight = cardWidth * 1.4;
-  const pad = 10;
+  const cardHeight = Theme.cardWidth * 1.4;
 
   return (
     <Group {...props}>
-      <Text text={advisor.label} fontSize={cardHeight * 0.1} x={10} y={10} />
+      <Text
+        text={advisor.label}
+        fontSize={cardHeight * 0.1}
+        x={Theme.spacing.xxs}
+        y={Theme.spacing.xxs}
+      />
       <Button
         text="Draw Card"
-        height={cardHeight * 0.1}
-        width={cardWidth * 0.5}
-        x={510}
-        y={10}
+        x={Theme.cardWidth * 1.2}
         onClick={() => {
           dispatch(drawCard(props.advisorKey));
         }}
@@ -36,9 +37,9 @@ export const AdvisorHand = (props: Props) => {
         <SmallCard
           cardKey={c}
           key={i}
-          x={pad + i * (cardWidth + pad)}
-          y={pad + 150}
-          width={cardWidth}
+          x={Theme.spacing.xxs + i * (Theme.cardWidth + Theme.spacing.xxs)}
+          y={Theme.spacing.xxs + Theme.sceneHeight * 0.07}
+          width={Theme.cardWidth}
           height={cardHeight}
         />
       ))}

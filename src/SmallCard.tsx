@@ -3,6 +3,7 @@ import Konva from "konva";
 import { Group, Text, Image } from "react-konva";
 import useImage from "use-image";
 
+import { Theme } from "./theme";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { Card as StoreCard } from "./store/cards";
 import { playCard, selectAllCards } from "./store/gameSlice";
@@ -27,6 +28,7 @@ export const SmallCard = ({
   const cards = useAppSelector(selectAllCards);
   const card: StoreCard = cards[cardKey];
 
+  // todo: base the image selection on advisor type?
   const path = "./icons/tcgcarddesign/grey_wood/";
   const [backSrc] = useImage(path + "back/back_grey_wood.png");
   const [bgSrc] = useImage(path + "card_title/bg_grey_wood.png");
@@ -73,7 +75,7 @@ export const SmallCard = ({
         height={height * 0.08}
         x={width * 0.14}
         y={height * 0.68}
-        fill="blue"
+        fill={Theme.palette.text.primary}
       />
       <Text
         text={card.description}
@@ -82,7 +84,7 @@ export const SmallCard = ({
         height={height * 0.18}
         x={width * 0.11}
         y={height * 0.8}
-        fill="grey"
+        fill={Theme.palette.text.contrast}
       />
     </Group>
   );

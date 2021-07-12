@@ -2,6 +2,7 @@ import * as React from "react";
 import { createGlobalStyle } from "styled-components";
 import { Provider } from "react-redux";
 
+import { Theme } from "./theme";
 import { store } from "./store/store";
 import { Board } from "./Board";
 
@@ -10,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: rgb(1, 38, 52);
+    background-color: ${Theme.palette.background.dark};
   }
 `;
 
