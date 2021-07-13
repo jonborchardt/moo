@@ -30,7 +30,7 @@ export const Button = (props: Props) => {
       ref={r as any}
       onClick={() => {
         changeSize();
-        props.onClick();
+        props.onClick && props.onClick();
       }}
     >
       <Tag

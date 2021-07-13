@@ -2,7 +2,7 @@ const factor = 3.75;
 export const Theme = {
   sceneWidth: 1024 * factor,
   sceneHeight: 576 * factor,
-  cardWidth: 110 * factor,
+  cardWidth: 82 * factor,
   font: {
     family: "Calibri",
     size: 16 * factor,

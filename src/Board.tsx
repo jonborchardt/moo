@@ -49,7 +49,7 @@ export const Board = () => {
             <AdvisorHand
               key={a}
               x={Theme.sceneWidth * 0.25 * i}
-              y={Theme.sceneHeight * 0.6}
+              y={Theme.sceneHeight * 0.7}
               advisorKey={a}
               deck={decks[a].hand}
             />
@@ -69,6 +69,8 @@ export const Board = () => {
             }}
           />
         </Layer>
+
+        <Layer name="top-layer" />
       </Provider>
     </Stage>
   );
