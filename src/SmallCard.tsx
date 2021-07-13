@@ -2,8 +2,8 @@ import React, { useRef, useState } from "react";
 import Konva from "konva";
 import { Group, Text, Image, Rect } from "react-konva";
 import useImage from "use-image";
-import { Portal } from "react-konva-utils";
 
+import { Modal } from "./Modal";
 import { Theme } from "./theme";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { Card as StoreCard } from "./store/cards";
@@ -94,7 +94,7 @@ export const SmallCard = ({
     }
   };
 
-  /*    
+  /*
     n.to({
       scaleX: newScale,
       scaleY: newScale,
@@ -106,91 +106,85 @@ export const SmallCard = ({
     */
 
   return (
-    <Portal selector=".top-layer" enabled={modal}>
-      {modal ? (
-        <Rect
-          fill="black"
-          opacity={0.7}
-          width={Theme.sceneWidth}
-          height={Theme.sceneHeight}
-        />
-      ) : null}
-      <Group
-        ref={r as any}
-        className={className}
-        {...other}
-        width={width}
-        height={height}
-        onClick={() => openModal()}
-      >
-        <Image image={bgSrc} width={width} height={height} />
-        <Image
-          image={mainSrc}
-          width={width * 0.91}
-          height={height * 0.73}
-          x={width * 0.05}
-          y={height * 0.03}
-        />
-        <Image image={frameSrc} width={width} height={height} />
-        <Image
-          image={slotSrc}
-          width={height * 0.2}
-          height={height * 0.2}
-          x={width * 0.666}
-          y={height * 0.75}
-        />
-        <Image
-          image={advisorSrc}
-          width={height * 0.2}
-          height={height * 0.2}
-          x={width * 0.666}
-          y={height * 0.75}
-        />
-        <Text
-          text={card.label}
-          fontSize={width * 0.08}
-          width={width * 0.72}
-          height={height * 0.08}
-          x={width * 0.14}
-          y={height * 0.68}
-          fill={Theme.palette.text.primary}
-        />
-        <Text
-          text={card.description}
-          fontSize={width * 0.08}
-          width={width * 0.55}
-          height={height * 0.18}
-          x={width * 0.11}
-          y={height * 0.8}
-          fill={Theme.palette.text.contrast}
-        />
-      </Group>
-      {modalBtns ? (
-        <>
-          <Button
-            text="Play Card"
-            x={
-              Theme.sceneWidth / 2 -
-              (Theme.cardWidth / 2) * modalScale +
-              Theme.spacing.md
-            }
-            y={Theme.sceneHeight * 0.87}
-            onClick={() => {
-              dispatch(playCard(card));
-            }}
+    <Modal portalSelector={".top-layer"} showModal={modal}>
+      <>
+        <Group
+          ref={r as any}
+          className={className}
+          {...other}
+          width={width}
+          height={height}
+          onClick={() => openModal()}
+        >
+          <Image image={bgSrc} width={width} height={height} />
+          <Image
+            image={mainSrc}
+            width={width * 0.91}
+            height={height * 0.73}
+            x={width * 0.05}
+            y={height * 0.03}
           />
-          <Button
-            text="Cancel"
-            x={
-              Theme.sceneWidth / 2 -
-              (Theme.cardWidth / 2) * modalScale +
-              Theme.spacing.xl4
-            }
-            y={Theme.sceneHeight * 0.87}
-            onClick={() => closeModal()}
+          <Image image={frameSrc} width={width} height={height} />
+          <Image
+            image={slotSrc}
+            width={height * 0.2}
+            height={height * 0.2}
+            x={width * 0.666}
+            y={height * 0.75}
           />
-        </>
-      ) : null}
-    </Portal>
+          <Image
+            image={advisorSrc}
+            width={height * 0.2}
+            height={height * 0.2}
+            x={width * 0.666}
+            y={height * 0.75}
+          />
+          <Text
+            text={card.label}
+            fontSize={width * 0.08}
+            width={width * 0.72}
+            height={height * 0.08}
+            x={width * 0.14}
+            y={height * 0.68}
+            fill={Theme.palette.text.primary}
+          />
+          <Text
+            text={card.description}
+            fontSize={width * 0.08}
+            width={width * 0.55}
+            height={height * 0.18}
+            x={width * 0.11}
+            y={height * 0.8}
+            fill={Theme.palette.text.contrast}
+          />
+        </Group>
+        {modalBtns ? (
+          <>
+            <Button
+              text="Play Card"
+              x={
+                Theme.sceneWidth / 2 -
+                (Theme.cardWidth / 2) * modalScale +
+                Theme.spacing.md
+              }
+              y={Theme.sceneHeight * 0.87}
+              onClick={() => {
+                dispatch(playCard(card));
+              }}
+            />
+            <Button
+              text="Cancel"
+              x={
+                Theme.sceneWidth / 2 -
+                (Theme.cardWidth / 2) * modalScale +
+                Theme.spacing.xl4
+              }
+              y={Theme.sceneHeight * 0.87}
+              onClick={() => closeModal()}
+            />
+          </>
+        ) : null}
+      </>
+    </Modal>
   );
 };
